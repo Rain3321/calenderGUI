@@ -17,7 +17,7 @@ public class Frame extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		Container contentPane1 = getContentPane();
-		Container register = getContentPane();
+//		Container register = getContentPane();
 		GridLayout grid = new GridLayout(3, 2);
 		grid.setVgap(5);
 		contentPane1.setLayout(grid);
