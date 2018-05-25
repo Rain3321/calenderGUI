@@ -1,15 +1,15 @@
 package calender;
-import java.awt.*;
+
 import javax.swing.*;
-import java.awt.event.*;
 
+public class Calender extends JFrame {
 
-public class Calender extends JFrame{
-	Calender(){
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3;
+	public Calender(String id){
 		
 	}
-	public static void main(String[] args){
-		new Calender();
-	}
+	
 }
-
