@@ -24,26 +24,33 @@ public class Cal extends JPanel {
 	JButton Left;	//이전 달로 가는 화살표
 	JButton Right;	//다음 달로 가는 화살표
 	
+	JFrame f = new JFrame();
+	Container c = f.getContentPane();
+	
 
-  Cal() {
-	super();
-    setYYMMDD(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+	Cal() {
+		super();
+		c.setLayout(new BorderLayout());
+		setYYMMDD(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH));	//날짜 설정
-    buildGUI();	//GUI 구현
-    recompute();	//이벤트나 설정에 따라 표시되는 년,월,일 변경
-  }
+		buildGUI();	//GUI 구현
+		recompute();	//이벤트나 설정에 따라 표시되는 년,월,일 변경
+		
+		f.pack();
+		f.setVisible(true);
+	}
   
-  private void setYYMMDD(int year, int month, int today) {
-    yy = year;
-    mm = month;
-    dd = today;
-  }
+	private void setYYMMDD(int year, int month, int today) {
+		yy = year;
+		mm = month;
+		dd = today;
+	}
 
-  String[] months = { "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"};
+	String[] months = { "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"};
       
-  private void buildGUI() {		//GUI 구현
-    //getAccessibleContext().setAccessibleDescription("");
-    //setBorder(BorderFactory.createEtchedBorder());
+private void buildGUI() {		//GUI 구현
+    getAccessibleContext().setAccessibleDescription("");
+    setBorder(BorderFactory.createEtchedBorder());
 
     setLayout(new BorderLayout());
 
@@ -70,7 +77,7 @@ public class Cal extends JPanel {
       }
     });
 
-    add(BorderLayout.CENTER, tp);
+    c.add(BorderLayout.CENTER, tp);
 
     JPanel bp = new JPanel();	// Day 버튼이 부착되는 패널 bp
     bp.setLayout(new GridLayout(7, 7));
@@ -99,8 +106,8 @@ public class Cal extends JPanel {
         labs[i][j].addActionListener(dateSetter);	//Day버튼 리스너 추가.
       }
 
-    add(BorderLayout.SOUTH, bp);
-  }
+    c.add(BorderLayout.SOUTH, bp);
+ }
 
   public final static int dom[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
@@ -171,15 +178,16 @@ public class Cal extends JPanel {
  
 
   
-  public static void main(String[] av) {
-    JFrame f = new JFrame("Cal");
+  public static void main(String[] args) {
+    /*JFrame f = new JFrame("Cal");
     Container c = f.getContentPane();
     c.setLayout(new BorderLayout());
 
     c.add(new Cal());
 
     f.pack();
-    f.setVisible(true);
+    f.setVisible(true);*/
+	  new Cal();
     
   }
 }
