@@ -10,9 +10,12 @@ public class Cal extends JPanel {
   
 	protected int yy = 2018;
 	static int mm, dd;
+	
 	protected JButton labs[][]; 	//일 표시되는 버튼
 	protected int leadGap = 0;		//월이 시작할 때 비어있는 버튼 개수
 	private JButton b0;	//clear시 b0을 이용해 리셋
+	static int Selectmm;
+	static int Selectdd;
 	
 	static Calendar calendar = new GregorianCalendar();
 	final static int thisYear = calendar.get(Calendar.YEAR);
@@ -86,19 +89,19 @@ private void buildGUI() {		//GUI 구현
     Right.setPreferredSize(new Dimension(50, 50));
     Left.addActionListener(new ActionListener() {	//이전 달로 가는 버튼 이벤트
     	public void actionPerformed(ActionEvent e) {
-    		if(mm>=1)
+    		if(mm>=1) 
     			mm--;
-    			
     		recompute();
     	}
     });
     
     Right.addActionListener(new ActionListener() {	//다음 달로 가는 버튼 이벤트
       public void actionPerformed(ActionEvent e) {
-    	  if(mm<11)
+    	  if(mm<11) 
     		  mm++;
-    	  recompute();
+    		  recompute();
       }
+      
     });
 
     Pop.add(tp);
@@ -142,8 +145,6 @@ private void buildGUI() {		//GUI 구현
 	  if (mm < 0 || mm > 11)
 		  throw new IllegalArgumentException("mm값  " + mm + "는 0-11 사이");
 	  clearDayActive();
-	  calendar = new GregorianCalendar(yy, mm, dd);
-	  
 	  
 	  leadGap = new GregorianCalendar(yy, mm, 1).get(Calendar.DAY_OF_WEEK) - 1; //일요일은 1, 토요일 7
 	  
@@ -205,21 +206,16 @@ private void buildGUI() {		//GUI 구현
 	  square.setBackground(Color.red);
 	  square.repaint(); //갱신
 	  activeDay = newDay;
+	  AddSchedule.SelectCalMonth = mm + 1;
+	  AddSchedule.SelectCalDay = dd;
+	  
+	  
 	  
   }	
  
 
   
   public static void main(String[] args) {
-    /*JFrame f = new JFrame("Cal");
-    Container c = f.getContentPane();
-    c.setLayout(new BorderLayout());
-
-    c.add(new Cal());
-
-    f.pack();
-    f.setVisible(true);*/
 	  
-    
   }
 }

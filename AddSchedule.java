@@ -36,11 +36,11 @@ public class AddSchedule extends JPanel{
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 	
 	
-	int SelectCalMonth = Cal.mm + 1;	//선택한 달 가져옴
-	int SelectCalDay = Cal.dd;	//선택한 일 가져옴
-	String SelectDay = "2018";
-	String Selectmonth ="";	// 선택한 버튼 날짜에서 가져온 달 추가
-	String Selectday =""; // 선택한 버튼 날짜에서 가져온 일 추가
+	static int SelectCalMonth;	//선택한 달 가져옴
+	static int SelectCalDay;	//선택한 일 가져옴
+	String SelectDay;
+	String Selectedcmonth ="";	// 선택한 버튼 날짜에서 가져온 달 추가
+	String Selectedcday =""; // 선택한 버튼 날짜에서 가져온 일 추가
 	static String StrendDate = "";	//DDay로 일정 추가한 텍스트 
 	Date StartDate;
 	Date endDate;
@@ -52,18 +52,8 @@ public class AddSchedule extends JPanel{
 	}
 	
 	public AddSchedule(PanelManage f) throws ParseException {
-	     Selectmonth = "";
-	     Selectday = "";
-	     if(SelectCalMonth < 10) {
-				Selectmonth += "0" + Integer.toString(SelectCalMonth);
-		} else
-				Selectmonth += Integer.toString(SelectCalMonth);
-		if(SelectCalDay < 10) {
-			Selectday += "0" + Integer.toString(SelectCalDay);
-		} else
-			Selectday += Integer.toString(SelectCalDay);
-		SelectDay += Selectmonth + Selectday;
-		StartDate = formatter.parse(SelectDay);
+		
+	    
 		
 		
 		this.f = f;
@@ -105,17 +95,35 @@ public class AddSchedule extends JPanel{
 
 				String txt1 = TitleText.getText();
 				String txt2 = SetDDay.getText();
+				
 				String t;
 				getSetDDay(txt2);
 				SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+				if(SelectCalMonth < 10) {
+			    	 Selectedcmonth = "0" + Integer.toString(SelectCalMonth);
+			    	 
+				} else
+					Selectedcmonth = Integer.toString(SelectCalMonth);
+				if(SelectCalDay < 10) {
+					Selectedcday = "0" + Integer.toString(SelectCalDay);
+				} else
+					Selectedcday = Integer.toString(SelectCalDay);
+				SelectDay = "2018" + Selectedcmonth + Selectedcday;
 				try {
+					StartDate = formatter.parse(SelectDay);
+					
 					endDate = formatter.parse(StrendDate);
-				} catch (ParseException e2) {
-					e2.printStackTrace();
+				} catch (ParseException e3) {
+					e3.printStackTrace();
 				}
+				
 				long diff = endDate.getTime() - StartDate.getTime();
 				long diffDays = diff /(24 * 60 * 60 * 1000);
+				System.out.println(SelectCalMonth);
+				System.out.println(SelectCalDay);
+				
 				System.out.println(diffDays);
+				
 				try {
 					BufferedWriter in = new BufferedWriter(new FileWriter(fileNm, true));
 					BufferedReader out = new BufferedReader(new FileReader(fileNm));
@@ -155,4 +163,5 @@ public class AddSchedule extends JPanel{
 		
 	}
 }
+
 
