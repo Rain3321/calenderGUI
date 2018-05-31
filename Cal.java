@@ -9,36 +9,63 @@ import java.util.GregorianCalendar;
 public class Cal extends JPanel {
   
 	protected int yy = 2018;
-	protected int mm, dd;
+	static int mm, dd;
 	protected JButton labs[][]; 	//일 표시되는 버튼
 	protected int leadGap = 0;		//월이 시작할 때 비어있는 버튼 개수
 	private JButton b0;	//clear시 b0을 이용해 리셋
-
-	Calendar calendar = new GregorianCalendar();
-	protected final int thisYear = calendar.get(Calendar.YEAR);
-	protected final int thisMonth = calendar.get(Calendar.MONTH);
 	
-	JLabel selectYearMonth = new JLabel();
+	static Calendar calendar = new GregorianCalendar();
+	final static int thisYear = calendar.get(Calendar.YEAR);
+	final static int thisMonth = calendar.get(Calendar.MONTH);
+	final static int thisDay = calendar.get(Calendar.DATE);
+	
+	
+	JLabel UserName = new JLabel("유저 1");	//유저 이름 표시
+	
+	
+	JLabel selectYearMonth = new JLabel(); //현재 년도 및 월 표시
 	ImageIcon ILeft = new ImageIcon("images/Left.PNG");	//이전 달로 가는 화살표 이미지 가져오기
 	ImageIcon IRight = new ImageIcon("images/Right.PNG"); //다음 달로 가는 화살표 이미지 가져오기
 	JButton Left;	//이전 달로 가는 화살표
 	JButton Right;	//다음 달로 가는 화살표
 	
-	JFrame f = new JFrame();
-	Container c = f.getContentPane();
+	PanelManage f;
+	
+	
+	JPanel Pop;	//상단 유저네임, 월 이동 버튼, 일정추가 버튼, 현재 날짜 가는 버튼
+	JPanel NowDayBtnPanel = new JPanel();
 	
 
-	Cal() {
+	Cal(PanelManage f) {
 		super();
-		c.setLayout(new BorderLayout());
+		this.f = f;
+		setLayout(new BorderLayout());
+		Pop = new JPanel();
+		JButton NowDay = new JButton("현재 날짜 이동");
+		NowDay.setFont(new Font("고딕", Font.ITALIC, 13));
+		NowDay.setBackground(Color.CYAN);
+		NowDay.setPreferredSize(new Dimension(130,50));
+		NowDayBtnPanel.add(NowDay);
+		Pop.setLayout(new GridLayout(1,3));
+		Pop.add(UserName);
+		// 현재 날짜로 이동하는 이벤트 추가
+		NowDay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mm = thisMonth;
+				setDayActive(thisDay);
+				recompute();
+			}
+		});
+		
 		setYYMMDD(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH));	//날짜 설정
 		buildGUI();	//GUI 구현
+		Pop.add(NowDayBtnPanel);
+		add(BorderLayout.NORTH, Pop);
 		recompute();	//이벤트나 설정에 따라 표시되는 년,월,일 변경
 		
-		f.pack();
-		f.setVisible(true);
 	}
+	
   
 	private void setYYMMDD(int year, int month, int today) {
 		yy = year;
@@ -49,11 +76,7 @@ public class Cal extends JPanel {
 	String[] months = { "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"};
       
 private void buildGUI() {		//GUI 구현
-    getAccessibleContext().setAccessibleDescription("");
-    setBorder(BorderFactory.createEtchedBorder());
-
-    setLayout(new BorderLayout());
-
+ 
     JPanel tp = new JPanel(); //패널 tp에 왼쪽, 오른쪽 버튼 부착 및 현재 년,월 표시 라벨 부착
     tp.setLayout(new FlowLayout(FlowLayout.CENTER,50,0));
     tp.add(Left = new JButton(ILeft));
@@ -65,6 +88,7 @@ private void buildGUI() {		//GUI 구현
     	public void actionPerformed(ActionEvent e) {
     		if(mm>=1)
     			mm--;
+    			
     		recompute();
     	}
     });
@@ -77,7 +101,7 @@ private void buildGUI() {		//GUI 구현
       }
     });
 
-    c.add(BorderLayout.CENTER, tp);
+    Pop.add(tp);
 
     JPanel bp = new JPanel();	// Day 버튼이 부착되는 패널 bp
     bp.setLayout(new GridLayout(7, 7));
@@ -95,9 +119,11 @@ private void buildGUI() {		//GUI 구현
       public void actionPerformed(ActionEvent e) {
         String num = e.getActionCommand();
         if (!num.equals("")) {
-          setDayActive(Integer.parseInt(num));
+        	setDayActive(Integer.parseInt(num));
+        	f.change("AddSchedule");	//버튼 눌렀을 시 스케줄 추가 패널로 이동
         }
       }
+     
     };
 
     for (int i = 0; i < 6; i++)
@@ -106,7 +132,7 @@ private void buildGUI() {		//GUI 구현
         labs[i][j].addActionListener(dateSetter);	//Day버튼 리스너 추가.
       }
 
-    c.add(BorderLayout.SOUTH, bp);
+    add(BorderLayout.CENTER, bp);
  }
 
   public final static int dom[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -118,28 +144,33 @@ private void buildGUI() {		//GUI 구현
 	  clearDayActive();
 	  calendar = new GregorianCalendar(yy, mm, dd);
 	  
+	  
 	  leadGap = new GregorianCalendar(yy, mm, 1).get(Calendar.DAY_OF_WEEK) - 1; //일요일은 1, 토요일 7
-	  System.out.println("leadGap = " + leadGap);
-
+	  
+	  for (int i = 0; i < 6; i++)
+	      for (int j = 0; j < 7; j++) {
+	    	  labs[i][j].setText("");
+	      }
 	  int daysInMonth = dom[mm];
 	  // 첫째 주 공백 버튼
-	  for (int i = 0; i < leadGap; i++) {
+	  /*for (int i = 0; i < leadGap; i++) {
 		  labs[0][i].setText("");
-	  }
+	  }*/
 	  // Day버튼 1일부터 추가
 	  for (int i = 1; i <= daysInMonth; i++) {
 		  JButton b = labs[(leadGap + i - 1) / 7][(leadGap + i - 1) % 7];
 		  b.setText(Integer.toString(i));
+		  
 	  }
 	  // 마지막 주 공백 버튼
-	  for (int i = leadGap + 1 + daysInMonth; i < 6 * 7; i++) {
-		  labs[(i) / 7][(i) % 7].setText("");
-	  }
-
-	  /*
+	  /*for (int i = leadGap + 1 + daysInMonth; i < 6 * 7; i++) {
+		  labs[ i / 7][ i % 7 ].setText("");
+		  
+	  }*/
+	  
 	  if (thisYear == yy && mm == thisMonth)
 		  setDayActive(dd);
-	  repaint();*/
+	  repaint();
   }
 
   	/*
@@ -174,7 +205,8 @@ private void buildGUI() {		//GUI 구현
 	  square.setBackground(Color.red);
 	  square.repaint(); //갱신
 	  activeDay = newDay;
-  }
+	  
+  }	
  
 
   
@@ -187,7 +219,7 @@ private void buildGUI() {		//GUI 구현
 
     f.pack();
     f.setVisible(true);*/
-	  new Cal();
+	  
     
   }
 }
