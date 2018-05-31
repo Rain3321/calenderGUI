@@ -8,69 +8,90 @@ import java.util.GregorianCalendar;
 
 public class Calender extends JPanel {
   
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3;
 	protected int yy = 2018;
-	protected int mm, dd;
-	protected JButton labs[][]; 	//ÀÏ Ç¥½ÃµÇ´Â ¹öÆ°
-	protected int leadGap = 0;		//¿ùÀÌ ½ÃÀÛÇÒ ¶§ ºñ¾îÀÖ´Â ¹öÆ° °³¼ö
-	private JButton b0;	//clear½Ã b0À» ÀÌ¿ëÇØ ¸®¼Â
+	static int mm, dd; 
+	public final static int dom[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+	
+	protected JButton labs[][]; 	//ì¼ í‘œì‹œë˜ëŠ” ë²„íŠ¼
+	protected int leadGap = 0;		//ì›”ì´ ì‹œì‘í•  ë•Œ ë¹„ì–´ìˆëŠ” ë²„íŠ¼ ê°œìˆ˜
+	private JButton b0;	//clearì‹œ b0ì„ ì´ìš©í•´ ë¦¬ì…‹
+	static int Selectmm;
+	static int Selectdd;
+	private int activeDay = -1; 
+	static Calendar calendar = new GregorianCalendar();
+	final static int thisYear = calendar.get(Calendar.YEAR);
+	final static int thisMonth = calendar.get(Calendar.MONTH);
+	final static int thisDay = calendar.get(Calendar.DATE);
+	
+	String[] months = { "1ì›”", "2ì›”", "3ì›”", "4ì›”", "5ì›”", "6ì›”", "7ì›”", "8ì›”", "9ì›”", "10ì›”", "11ì›”", "12ì›”"};
+	
+	JLabel UserName = new JLabel("");	//ìœ ì € ì´ë¦„ í‘œì‹œ
+	
+	
+	JLabel selectYearMonth = new JLabel(); //í˜„ì¬ ë…„ë„ ë° ì›” í‘œì‹œ
+	ImageIcon ILeft = new ImageIcon("images/Left.PNG");	//ì´ì „ ë‹¬ë¡œ ê°€ëŠ” í™”ì‚´í‘œ ì´ë¯¸ì§€ ê°€ì ¸ì˜¤ê¸°
+	ImageIcon IRight = new ImageIcon("images/Right.PNG"); //ë‹¤ìŒ ë‹¬ë¡œ ê°€ëŠ” í™”ì‚´í‘œ ì´ë¯¸ì§€ ê°€ì ¸ì˜¤ê¸°
+	JButton Left;	//ì´ì „ ë‹¬ë¡œ ê°€ëŠ” í™”ì‚´í‘œ
+	JButton Right;	//ë‹¤ìŒ ë‹¬ë¡œ ê°€ëŠ” í™”ì‚´í‘œ
+	
+	PanelManage f;
+	
+	
+	JPanel Pop;	//ìƒë‹¨ ìœ ì €ë„¤ì„, ì›” ì´ë™ ë²„íŠ¼, ì¼ì •ì¶”ê°€ ë²„íŠ¼, í˜„ì¬ ë‚ ì§œ ê°€ëŠ” ë²„íŠ¼
+	JPanel NowDayBtnPanel = new JPanel();
+	
 
-	Calendar calendar = new GregorianCalendar();
-	protected final int thisYear = calendar.get(Calendar.YEAR);
-	protected final int thisMonth = calendar.get(Calendar.MONTH);
-	
-	JLabel selectYearMonth = new JLabel();
-	ImageIcon ILeft = new ImageIcon("images/Left.PNG");	//ÀÌÀü ´Ş·Î °¡´Â È­»ìÇ¥ ÀÌ¹ÌÁö °¡Á®¿À±â
-	ImageIcon IRight = new ImageIcon("images/Right.PNG"); //´ÙÀ½ ´Ş·Î °¡´Â È­»ìÇ¥ ÀÌ¹ÌÁö °¡Á®¿À±â
-	JButton Left;	//ÀÌÀü ´Ş·Î °¡´Â È­»ìÇ¥
-	JButton Right;	//´ÙÀ½ ´Ş·Î °¡´Â È­»ìÇ¥
-	JLabel User = new JLabel();
-	
-	JFrame f = new JFrame();
-	Container c = f.getContentPane();
-	
-
-	Calender() {
+	Calender(PanelManage f, String id) {
 		super();
-		c.setLayout(new BorderLayout());
+		this.f = f;
+		setLayout(new BorderLayout());
+		Pop = new JPanel();
+		JButton NowDay = new JButton("í˜„ì¬ ë‚ ì§œ ì´ë™");
+		NowDay.setFont(new Font("ê³ ë”•", Font.ITALIC, 13));
+		NowDay.setBackground(Color.CYAN);
+		NowDay.setPreferredSize(new Dimension(130,50));
+		NowDayBtnPanel.add(NowDay);
+		Pop.setLayout(new GridLayout(1,3));
+		UserName.setText(id);
+		UserName.setFont(new Font("ê³ ë”•",Font.PLAIN, 24));
+		Pop.add(UserName);
+		// í˜„ì¬ ë‚ ì§œë¡œ ì´ë™í•˜ëŠ” ì´ë²¤íŠ¸ ì¶”ê°€
+		NowDay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mm = thisMonth;
+				setDayActive(thisDay);
+				recompute();
+			}
+		});
+		
 		setYYMMDD(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH));	//³¯Â¥ ¼³Á¤
-		buildGUI();	//GUI ±¸Çö
-		recompute();	//ÀÌº¥Æ®³ª ¼³Á¤¿¡ µû¶ó Ç¥½ÃµÇ´Â ³â,¿ù,ÀÏ º¯°æ
-		f.pack();
-		f.setVisible(true);
+        calendar.get(Calendar.DAY_OF_MONTH));	//ë‚ ì§œ ì„¤ì •
+		buildGUI();	//GUI êµ¬í˜„
+		Pop.add(NowDayBtnPanel);
+		add(BorderLayout.NORTH, Pop);
+		recompute();	//ì´ë²¤íŠ¸ë‚˜ ì„¤ì •ì— ë”°ë¼ í‘œì‹œë˜ëŠ” ë…„,ì›”,ì¼ ë³€ê²½
+		
 	}
-	Calender(String id){
-		this();
-		User.setText(id);
-	}
-	private void setYYMMDD(int year, int month, int today) {
+	
+  
+	private void setYYMMDD(int year, int month, int today) { //static ë§´ë²„ mm, ddì— ë‹¬ê³¼ ì¼ ì €ì¥ 
 		yy = year;
 		mm = month;
 		dd = today;
 	}
 
-	String[] months = { "1¿ù", "2¿ù", "3¿ù", "4¿ù", "5¿ù", "6¿ù", "7¿ù", "8¿ù", "9¿ù", "10¿ù", "11¿ù", "12¿ù"};
+	
       
-private void buildGUI() {		//GUI ±¸Çö
-    getAccessibleContext().setAccessibleDescription("");
-    setBorder(BorderFactory.createEtchedBorder());
-
-    setLayout(new BorderLayout());
-
-    JPanel tp = new JPanel(); //ÆĞ³Î tp¿¡ ¿ŞÂÊ, ¿À¸¥ÂÊ ¹öÆ° ºÎÂø ¹× ÇöÀç ³â,¿ù Ç¥½Ã ¶óº§ ºÎÂø
+private void buildGUI() {		//GUI êµ¬í˜„
+ 
+    JPanel tp = new JPanel(); //íŒ¨ë„ tpì— ì™¼ìª½, ì˜¤ë¥¸ìª½ ë²„íŠ¼ ë¶€ì°© ë° í˜„ì¬ ë…„,ì›” í‘œì‹œ ë¼ë²¨ ë¶€ì°©
     tp.setLayout(new FlowLayout(FlowLayout.CENTER,50,0));
-    tp.add(User);
-
     tp.add(Left = new JButton(ILeft));
     Left.setPreferredSize(new Dimension(50, 50));
     tp.add(selectYearMonth);
     tp.add(Right = new JButton(IRight));
     Right.setPreferredSize(new Dimension(50, 50));
-    Left.addActionListener(new ActionListener() {	//ÀÌÀü ´Ş·Î °¡´Â ¹öÆ° ÀÌº¥Æ®
+    Left.addActionListener(new ActionListener() {	//ì´ì „ ë‹¬ë¡œ ê°€ëŠ” ë²„íŠ¼ ì´ë²¤íŠ¸
     	public void actionPerformed(ActionEvent e) {
     		if(mm>=1)
     			mm--;
@@ -78,7 +99,7 @@ private void buildGUI() {		//GUI ±¸Çö
     	}
     });
     
-    Right.addActionListener(new ActionListener() {	//´ÙÀ½ ´Ş·Î °¡´Â ¹öÆ° ÀÌº¥Æ®
+    Right.addActionListener(new ActionListener() {	//ë‹¤ìŒ ë‹¬ë¡œ ê°€ëŠ” ë²„íŠ¼ ì´ë²¤íŠ¸
       public void actionPerformed(ActionEvent e) {
     	  if(mm<11)
     		  mm++;
@@ -86,71 +107,76 @@ private void buildGUI() {		//GUI ±¸Çö
       }
     });
 
-    c.add(BorderLayout.CENTER, tp);
+    Pop.add(tp);
 
-    JPanel bp = new JPanel();	// Day ¹öÆ°ÀÌ ºÎÂøµÇ´Â ÆĞ³Î bp
+    JPanel bp = new JPanel();	// Day ë²„íŠ¼ì´ ë¶€ì°©ë˜ëŠ” íŒ¨ë„ bp
     bp.setLayout(new GridLayout(7, 7));
     labs = new JButton[6][7]; 
 
-    bp.add(b0 = new JButton("ÀÏ"));
-    bp.add(new JButton("¿ù"));
-    bp.add(new JButton("È­"));
-    bp.add(new JButton("¼ö"));
-    bp.add(new JButton("¸ñ"));
-    bp.add(new JButton("±İ"));
-    bp.add(new JButton("Åä"));
+    bp.add(b0 = new JButton("ì¼"));
+    bp.add(new JButton("ì›”"));
+    bp.add(new JButton("í™”"));
+    bp.add(new JButton("ìˆ˜"));
+    bp.add(new JButton("ëª©"));
+    bp.add(new JButton("ê¸ˆ"));
+    bp.add(new JButton("í† "));
 
-    ActionListener dateSetter = new ActionListener() { //Day¹öÆ°À» ´­·¶À» ½Ã ¹ß»ıÇÏ´Â ÀÌº¥Æ®
+    ActionListener dateSetter = new ActionListener() { //Dayë²„íŠ¼ì„ ëˆŒë €ì„ ì‹œ ë°œìƒí•˜ëŠ” ì´ë²¤íŠ¸
       public void actionPerformed(ActionEvent e) {
         String num = e.getActionCommand();
         if (!num.equals("")) {
           setDayActive(Integer.parseInt(num));
+          f.change("AddSchedule");	//ë²„íŠ¼ ëˆŒë €ì„ ì‹œ ìŠ¤ì¼€ì¤„ ì¶”ê°€ íŒ¨ë„ë¡œ ì´ë™
         }
-        String id = User.getText();
-        new Event(id,Integer.parseInt(num));
       }
     };
 
     for (int i = 0; i < 6; i++)
       for (int j = 0; j < 7; j++) {
         bp.add(labs[i][j] = new JButton(""));
-        labs[i][j].addActionListener(dateSetter);	//Day¹öÆ° ¸®½º³Ê Ãß°¡.
+        labs[i][j].addActionListener(dateSetter);	//Dayë²„íŠ¼ ë¦¬ìŠ¤ë„ˆ ì¶”ê°€.
       }
 
-    c.add(BorderLayout.SOUTH, bp);
+    add(BorderLayout.CENTER, bp);
  }
 
-  public final static int dom[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-
-  protected void recompute() {
-	  selectYearMonth.setText(Integer.toString(yy) + "³â " + Integer.toString(mm+1) + "¿ù");
+  
+  
+//ë‹¬ë ¥ ë²„íŠ¼ ì„¸íŒ…
+  protected void recompute() {  
+	  selectYearMonth.setText(Integer.toString(yy) + "ë…„ " + Integer.toString(mm+1) + "ì›”");
+	  
 	  if (mm < 0 || mm > 11)
-		  throw new IllegalArgumentException("mm°ª  " + mm + "´Â 0-11 »çÀÌ");
+		  throw new IllegalArgumentException("mmê°’  " + mm + "ëŠ” 0-11 ì‚¬ì´");
 	  clearDayActive();
 	  calendar = new GregorianCalendar(yy, mm, dd);
+	  leadGap = new GregorianCalendar(yy, mm, 1).get(Calendar.DAY_OF_WEEK) - 1; //ì¼ìš”ì¼ì€ 1, í† ìš”ì¼ 7
 	  
-	  leadGap = new GregorianCalendar(yy, mm, 1).get(Calendar.DAY_OF_WEEK) - 1; //ÀÏ¿äÀÏÀº 1, Åä¿äÀÏ 7
-	  System.out.println("leadGap = " + leadGap);
-
+	  //ë²„íŠ¼ ìˆ«ì ì´ˆê¸°í™”
+	  for (int i = 0; i < 6; i++) 
+	      for (int j = 0; j < 7; j++) {
+	    	  labs[i][j].setText("");
+	      }
 	  int daysInMonth = dom[mm];
-	  // Ã¹Â° ÁÖ °ø¹é ¹öÆ°
+	  
+	  // ì²«ì§¸ ì£¼ ê³µë°± ë²„íŠ¼
 	  for (int i = 0; i < leadGap; i++) {
 		  labs[0][i].setText("");
 	  }
-	  // Day¹öÆ° 1ÀÏºÎÅÍ Ãß°¡
+	  // Dayë²„íŠ¼ 1ì¼ë¶€í„° ì¶”ê°€
 	  for (int i = 1; i <= daysInMonth; i++) {
 		  JButton b = labs[(leadGap + i - 1) / 7][(leadGap + i - 1) % 7];
 		  b.setText(Integer.toString(i));
+		  b.setFont(new Font("ê³ ë”•", Font.BOLD, 45));
 	  }
-	  // ¸¶Áö¸· ÁÖ °ø¹é ¹öÆ°
+	  // ë§ˆì§€ë§‰ ì£¼ ê³µë°± ë²„íŠ¼
 	  for (int i = leadGap + 1 + daysInMonth; i < 6 * 7; i++) {
 		  labs[(i) / 7][(i) % 7].setText("");
 	  }
-
-	  /*
+	  
 	  if (thisYear == yy && mm == thisMonth)
 		  setDayActive(dd);
-	  repaint();*/
+	  repaint();
   }
 
   	/*
@@ -161,20 +187,20 @@ private void buildGUI() {		//GUI ±¸Çö
   	}*/
 
 
-  //Day ¹öÆ° Å¬¸®¾î
-  private void clearDayActive() {
+//Day ë²„íŠ¼ í´ë¦¬ì–´
+  private void clearDayActive() { 
 	  JButton b;
 	  if (activeDay > 0) {
 		  b = labs[(leadGap + activeDay - 1) / 7][(leadGap + activeDay - 1) % 7];
 		  b.setBackground(b0.getBackground());
-		  b.repaint(); //°»½Å
+		  b.repaint(); //ê°±ì‹ 
 		  activeDay = -1;
 	  }
   }
 
-  private int activeDay = -1;
+ 
 
-  //Day ¹öÆ° ´­·¶À» ½Ã ¹è°æÀ» »¡°£»öÀ¸·Î º¯°æÇÏ´Â ÀÌº¥Æ® Ã³¸® ÇÔ¼ö
+  //Day ë²„íŠ¼ ëˆŒë €ì„ ì‹œ ë°°ê²½ì„ ë¹¨ê°„ìƒ‰ìœ¼ë¡œ ë³€ê²½í•˜ëŠ” ì´ë²¤íŠ¸ ì²˜ë¦¬ í•¨ìˆ˜
   public void setDayActive(int newDay) {
 	  clearDayActive();
 	  if (newDay <= 0)
@@ -183,19 +209,9 @@ private void buildGUI() {		//GUI ±¸Çö
 		  dd = newDay;
 	  Component square = labs[(leadGap + newDay - 1) / 7][(leadGap + newDay - 1) % 7]; 
 	  square.setBackground(Color.red);
-	  square.repaint(); //°»½Å
+	  square.repaint(); //ê°±ì‹ 
 	  activeDay = newDay;
-}
-
-  
-  public static void main(String[] args) {
-    /*JFrame f = new JFrame("Cal");
-    Container c = f.getContentPane();
-    c.setLayout(new BorderLayout());
-    c.add(new Cal());
-    f.pack();
-    f.setVisible(true);*/
-	  new Calender();
-    
+	  AddSchedule.SelectCalMonth = mm + 1;
+	  AddSchedule.SelectCalDay = dd;
   }
 }
