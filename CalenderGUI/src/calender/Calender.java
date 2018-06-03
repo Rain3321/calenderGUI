@@ -6,17 +6,22 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 
-public class Calender extends JPanel {
+public class Calender extends JPanel { 
   
+	/**
+	 * PanelManage에서 관리하는 1번째 패널.
+	 * 달력을 표시해주고 클릭하는 날짜에 대해 2번째 패널인 AddSchedule을 불러옴.
+	 * 왼쪽위에는 UserName 오른쪽 위에는 현재날짜로 오는 버튼 표시.
+	 */
+	private static final long serialVersionUID = 1L;
 	protected int yy = 2018;
 	static int mm, dd; 
 	public final static int dom[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	
 	protected JButton labs[][]; 	//일 표시되는 버튼
 	protected int leadGap = 0;		//월이 시작할 때 비어있는 버튼 개수
-	private JButton b0;	//clear시 b0을 이용해 리셋
-	static int Selectmm;
-	static int Selectdd;
+	private JButton b0 = new JButton();	//clear시 b0을 이용해 리셋
+	
 	private int activeDay = -1; 
 	static Calendar calendar = new GregorianCalendar();
 	final static int thisYear = calendar.get(Calendar.YEAR);
@@ -41,14 +46,13 @@ public class Calender extends JPanel {
 	JPanel NowDayBtnPanel = new JPanel();
 	
 
-	Calender(PanelManage f, String id) {
-		super();
+	Calender(PanelManage f, String id) {	//패널관리하는 프레임과 사용자 Id를 받아 생성자 실행
 		this.f = f;
 		setLayout(new BorderLayout());
 		Pop = new JPanel();
 		JButton NowDay = new JButton("현재 날짜 이동");
-		NowDay.setFont(new Font("고딕", Font.ITALIC, 13));
-		NowDay.setBackground(Color.CYAN);
+		NowDay.setFont(new Font("고딕", Font.BOLD, 13));
+		
 		NowDay.setPreferredSize(new Dimension(130,50));
 		NowDayBtnPanel.add(NowDay);
 		Pop.setLayout(new GridLayout(1,3));
@@ -65,7 +69,7 @@ public class Calender extends JPanel {
 		});
 		
 		setYYMMDD(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH));	//날짜 설정
+        calendar.get(Calendar.DAY_OF_MONTH));	//오늘 날짜로 설정
 		buildGUI();	//GUI 구현
 		Pop.add(NowDayBtnPanel);
 		add(BorderLayout.NORTH, Pop);
@@ -112,14 +116,20 @@ private void buildGUI() {		//GUI 구현
     JPanel bp = new JPanel();	// Day 버튼이 부착되는 패널 bp
     bp.setLayout(new GridLayout(7, 7));
     labs = new JButton[6][7]; 
-
-    bp.add(b0 = new JButton("일"));
+    
+    
+    // 수정 일요일과 토요일 버튼은 따로 설정
+    JButton SunBtn = new JButton("일");
+    SunBtn.setForeground(Color.RED);
+    bp.add(SunBtn);
     bp.add(new JButton("월"));
     bp.add(new JButton("화"));
     bp.add(new JButton("수"));
     bp.add(new JButton("목"));
     bp.add(new JButton("금"));
-    bp.add(new JButton("토"));
+    JButton SatBtn = new JButton("토");
+    SatBtn.setForeground(Color.BLUE);
+    bp.add(SatBtn);
 
     ActionListener dateSetter = new ActionListener() { //Day버튼을 눌렀을 시 발생하는 이벤트
       public void actionPerformed(ActionEvent e) {
@@ -151,43 +161,30 @@ private void buildGUI() {		//GUI 구현
 	  clearDayActive();
 	  calendar = new GregorianCalendar(yy, mm, dd);
 	  leadGap = new GregorianCalendar(yy, mm, 1).get(Calendar.DAY_OF_WEEK) - 1; //일요일은 1, 토요일 7
-	  
+	  int daysInMonth = dom[mm];
 	  //버튼 숫자 초기화
 	  for (int i = 0; i < 6; i++) 
 	      for (int j = 0; j < 7; j++) {
 	    	  labs[i][j].setText("");
 	      }
-	  int daysInMonth = dom[mm];
-	  
-	  // 첫째 주 공백 버튼
-	  for (int i = 0; i < leadGap; i++) {
-		  labs[0][i].setText("");
-	  }
 	  // Day버튼 1일부터 추가
+	  // 토요일과 일요일 날짜 버튼 글씨는 파랑, 빨강으로 바뀌도록 설정
 	  for (int i = 1; i <= daysInMonth; i++) {
 		  JButton b = labs[(leadGap + i - 1) / 7][(leadGap + i - 1) % 7];
 		  b.setText(Integer.toString(i));
+		  if((leadGap + i - 1) % 7 == 6)
+			  b.setForeground(Color.BLUE);
+	  	  if((leadGap + i - 1) % 7 == 0)
+	  		b.setForeground(Color.RED);
 		  b.setFont(new Font("고딕", Font.BOLD, 45));
-	  }
-	  // 마지막 주 공백 버튼
-	  for (int i = leadGap + 1 + daysInMonth; i < 6 * 7; i++) {
-		  labs[(i) / 7][(i) % 7].setText("");
 	  }
 	  
 	  if (thisYear == yy && mm == thisMonth)
 		  setDayActive(dd);
 	  repaint();
   }
-
-  	/*
-  	public boolean isLeap(int year) {
-  		if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0)
-  			return true;
-  		return false;
-  	}*/
-
-
-//Day 버튼 클리어
+  
+//Day 버튼 클리어 다른 버튼 누르면 이전 버튼이 클리어 됨
   private void clearDayActive() { 
 	  JButton b;
 	  if (activeDay > 0) {
@@ -198,9 +195,7 @@ private void buildGUI() {		//GUI 구현
 	  }
   }
 
- 
-
-  //Day 버튼 눌렀을 시 배경을 빨간색으로 변경하는 이벤트 처리 함수
+ //Day 버튼 눌렀을 시 배경을 빨간색으로 변경하는 이벤트 처리 및 해당 버튼 날짜를 넘겨주는 함수
   public void setDayActive(int newDay) {
 	  clearDayActive();
 	  if (newDay <= 0)
@@ -208,7 +203,7 @@ private void buildGUI() {		//GUI 구현
 	  else
 		  dd = newDay;
 	  Component square = labs[(leadGap + newDay - 1) / 7][(leadGap + newDay - 1) % 7]; 
-	  square.setBackground(Color.red);
+	  square.setBackground(Color.WHITE);
 	  square.repaint(); //갱신
 	  activeDay = newDay;
 	  AddSchedule.SelectCalMonth = mm + 1;

@@ -2,8 +2,9 @@ package calender;
 
 import java.awt.Container;
 import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -19,6 +20,9 @@ import javax.swing.JTextField;
 
 
 public class Login extends JFrame {
+		private static final long serialVersionUID = 1L;
+
+
 	/**
 	 * 캘린더 처음 화면 구현
 	 * 회원 가입 및 로그인 기능
@@ -46,8 +50,11 @@ public class Login extends JFrame {
 		contentPane1.add(new JLabel("비밀번호 : "));
 		contentPane1.add(txt_password);
 		contentPane1.add(btn_login);
-		btn_login.addMouseListener(new MouseAdapter(){ //로그인 버튼 눌렀을 때 마우스 리스너 구현
-			public void mouseClicked(MouseEvent e){ //클릭되었을 때
+		btn_login.addActionListener(new ActionListener() {//로그인 버튼 눌렀을 때 마우스 리스너 구현
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
 				String str_id = txt_id.getText();
 				String str_password = new String(txt_password.getPassword());
 				try{
@@ -86,12 +93,18 @@ public class Login extends JFrame {
 			}
 		
 		});
+		
+			
+				
 		contentPane1.add(btn_register);
-		btn_register.addMouseListener(new MouseAdapter() { //회원가입 버튼 눌렀을 때 마우스 리스너
-			public void mouseClicked(MouseEvent e){
+		btn_register.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
 				new Register();
 			}
-		});
+		}); 
 		
 		setSize(400, 200);
 		setResizable(true);
@@ -99,7 +112,7 @@ public class Login extends JFrame {
 	}
 	void PanelManage() throws ParseException { //PanelManage 화면을 구성하는 메소드 
 		PanelManage Manager = new PanelManage();
-		Manager.setTitle("페이지 관리");
+		Manager.setTitle("HBC(HanBat Calculator)Sys.");
 		Manager.Panel1 = new Calender(Manager, id);
 		Manager.Panel2 = new AddSchedule(Manager);
 		
@@ -108,7 +121,7 @@ public class Login extends JFrame {
 		Manager.setSize(1000,700);
 		Manager.setVisible(true);
 	}
-
+	
 	public static void main(String[] args){
 		new Login();
 	}

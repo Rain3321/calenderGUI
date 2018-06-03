@@ -20,6 +20,10 @@ import javax.swing.JTextField;
 
 public class Register extends JFrame{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JButton confirm = new JButton("확인");
 	JButton cancel = new JButton("취소");
 	Container field = getContentPane();
